@@ -313,6 +313,7 @@ Crowi.prototype.setupPassport = async function() {
     this.passportService.setupLocalStrategy();
     this.passportService.setupLdapStrategy();
     this.passportService.setupGoogleStrategy();
+    this.passportService.setupSlackStrategy();
     this.passportService.setupGitHubStrategy();
     this.passportService.setupTwitterStrategy();
     this.passportService.setupOidcStrategy();

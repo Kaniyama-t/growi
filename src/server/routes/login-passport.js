@@ -292,6 +292,72 @@ module.exports = function(crowi, app) {
     });
   };
 
+  const loginWithSlack = function(req, res, next) {
+    debug('SlackOauth2.0 is NOT SUPPORTED official now.');
+    if (!passportService.isSlackStrategySetup) {
+      debug('SlackStrategy has not been set up');
+      req.flash('warningMessage', 'SlackStrategy has not been set up');
+      return next();
+    }
+
+    passport.authenticate('slack', {
+      scope: ['identity.basic', 'identity.email', 'identity.avatar', 'identity.team'],
+    })(req, res);
+  };
+
+  const loginPassportSlackCallback = async(req, res, next) => {
+    const globalLang = crowi.configManager.getConfig('crowi', 'app:globalLang');
+
+    const providerId = 'slack';
+    const strategyName = 'slack';
+
+    let response;
+    try {
+      response = await promisifiedPassportAuthentication(strategyName, req, res);
+    }
+    catch (err) {
+      return loginFailureHandler(req, res);
+    }
+
+    let name;
+
+    switch (globalLang) {
+      case 'en-US':
+        name = `${response.user.name}`;
+        break;
+      case 'ja':
+        name = `${response.user.name}`;
+        break;
+      default:
+        name = `${response.user.name}`;
+        break;
+    }
+
+    const userInfo = {
+      id: response.id,
+      username: response.user.name,
+      name,
+    };
+
+    if (response.user.email != null) {
+      userInfo.email = response.user.email;
+      userInfo.username = userInfo.email.slice(0, response.user.email.indexOf('@'));
+    }
+
+    const externalAccount = await getOrCreateUser(req, res, userInfo, providerId);
+    if (!externalAccount) {
+      return loginFailureHandler(req, res);
+    }
+
+    const user = await externalAccount.getPopulatedUser();
+
+    // login
+    req.logIn(user, (err) => {
+      if (err) { return next(err) }
+      return loginSuccessHandler(req, res, user);
+    });
+  };
+
   const loginWithGitHub = function(req, res, next) {
     if (!passportService.isGitHubStrategySetup) {
       debug('GitHubStrategy has not been set up');
@@ -599,12 +665,14 @@ module.exports = function(crowi, app) {
     testLdapCredentials,
     loginWithLocal,
     loginWithGoogle,
+    loginWithSlack,
     loginWithGitHub,
     loginWithTwitter,
     loginWithOidc,
     loginWithSaml,
     loginWithBasic,
     loginPassportGoogleCallback,
+    loginPassportSlackCallback,
     loginPassportGitHubCallback,
     loginPassportTwitterCallback,
     loginPassportOidcCallback,

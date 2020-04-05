@@ -35,6 +35,7 @@ import AdminSamlSecurityContainer from './services/AdminSamlSecurityContainer';
 import AdminOidcSecurityContainer from './services/AdminOidcSecurityContainer';
 import AdminBasicSecurityContainer from './services/AdminBasicSecurityContainer';
 import AdminGoogleSecurityContainer from './services/AdminGoogleSecurityContainer';
+import AdminSlackSecurityContainer from './services/AdminSlackSecurityContainer';
 import AdminGitHubSecurityContainer from './services/AdminGitHubSecurityContainer';
 import AdminTwitterSecurityContainer from './services/AdminTwitterSecurityContainer';
 import AdminNotificationContainer from './services/AdminNotificationContainer';
@@ -117,11 +118,12 @@ if (adminSecuritySettingElem != null) {
   const adminOidcSecurityContainer = new AdminOidcSecurityContainer(appContainer);
   const adminBasicSecurityContainer = new AdminBasicSecurityContainer(appContainer);
   const adminGoogleSecurityContainer = new AdminGoogleSecurityContainer(appContainer);
+  const adminSlackSecurityContainer = new AdminSlackSecurityContainer(appContainer);
   const adminGitHubSecurityContainer = new AdminGitHubSecurityContainer(appContainer);
   const adminTwitterSecurityContainer = new AdminTwitterSecurityContainer(appContainer);
   const adminSecurityContainers = [
     adminGeneralSecurityContainer, adminLocalSecurityContainer, adminLdapSecurityContainer, adminSamlSecurityContainer,
-    adminOidcSecurityContainer, adminBasicSecurityContainer, adminGoogleSecurityContainer, adminGitHubSecurityContainer, adminTwitterSecurityContainer,
+    adminOidcSecurityContainer, adminBasicSecurityContainer, adminGoogleSecurityContainer, adminSlackSecurityContainer, adminGitHubSecurityContainer, adminTwitterSecurityContainer,
   ];
   ReactDOM.render(
     <Provider inject={[...injectableContainers, ...adminSecurityContainers]}>

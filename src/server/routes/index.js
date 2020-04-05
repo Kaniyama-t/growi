@@ -65,12 +65,14 @@ module.exports = function(crowi, app) {
 
   // OAuth
   app.get('/passport/google'                      , loginPassport.loginWithGoogle);
+  app.get('/passport/slack'                       , loginPassport.loginWithSlack);
   app.get('/passport/github'                      , loginPassport.loginWithGitHub);
   app.get('/passport/twitter'                     , loginPassport.loginWithTwitter);
   app.get('/passport/oidc'                        , loginPassport.loginWithOidc);
   app.get('/passport/saml'                        , loginPassport.loginWithSaml);
   app.get('/passport/basic'                       , loginPassport.loginWithBasic);
   app.get('/passport/google/callback'             , loginPassport.loginPassportGoogleCallback);
+  app.get('/passport/slack/callback'              , loginPassport.loginPassportSlackCallback);
   app.get('/passport/github/callback'             , loginPassport.loginPassportGitHubCallback);
   app.get('/passport/twitter/callback'            , loginPassport.loginPassportTwitterCallback);
   app.get('/passport/oidc/callback'               , loginPassport.loginPassportOidcCallback);

@@ -5,6 +5,8 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const LdapStrategy = require('passport-ldapauth');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const SlackStrategy = require('passport-slack').Strategy;
+const express = require('express');
 const GitHubStrategy = require('passport-github').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
 const OidcStrategy = require('openid-client').Strategy;
@@ -39,6 +41,11 @@ class PassportService {
      * the flag whether GoogleStrategy is set up successfully
      */
     this.isGoogleStrategySetup = false;
+
+    /**
+     * the flag whether SlackStrategy is set up successfully
+     */
+    this.isSlackStrategySetup = false;
 
     /**
      * the flag whether GitHubStrategy is set up successfully
@@ -107,6 +114,10 @@ class PassportService {
         setup: 'setupGoogleStrategy',
         reset: 'resetGoogleStrategy',
       },
+      slack: {
+        setup: 'setupSlackStrategy',
+        reset: 'resetSlackStrategy',
+      },
       github: {
         setup: 'setupGitHubStrategy',
         reset: 'resetGitHubStrategy',
@@ -116,6 +127,8 @@ class PassportService {
         reset: 'resetTwitterStrategy',
       },
     };
+
+    this.app = express();
   }
 
   /**
@@ -133,6 +146,7 @@ class PassportService {
     if (this.isOidcStrategySetup) { setupStrategies.push('oidc') }
     if (this.isBasicStrategySetup) { setupStrategies.push('basic') }
     if (this.isGoogleStrategySetup) { setupStrategies.push('google') }
+    if (this.isSlackStrategySetup) { setupStrategies.push('slack') }
     if (this.isGitHubStrategySetup) { setupStrategies.push('github') }
     if (this.isTwitterStrategySetup) { setupStrategies.push('twitter') }
 
@@ -435,6 +449,57 @@ class PassportService {
 
     this.isGoogleStrategySetup = true;
     debug('GoogleStrategy: setup is done');
+  }
+
+  /**
+   * reset SlackStrategy
+   *
+   * @memberof PassportService
+   */
+  resetSlackStrategy() {
+    debug('SlackStrategy: reset');
+    passport.unuse('slack');
+    this.isSlackStrategySetup = false;
+  }
+
+  setupSlackStrategy() {
+
+    this.resetSlackStrategy();
+
+    const { configManager } = this.crowi;
+    const isSlackEnabled = configManager.getConfig('crowi', 'security:passport-slack:isEnabled');
+
+    // when disabled
+    if (!isSlackEnabled) {
+      return;
+    }
+
+    debug('SlackStrategy: setting up..');
+    passport.use(
+      new SlackStrategy(
+        {
+          clientID: configManager.getConfig('crowi', 'security:passport-slack:clientId'),
+          clientSecret: configManager.getConfig('crowi', 'security:passport-slack:clientSecret'),
+          callbackURL: (this.crowi.appService.getSiteUrl() != null)
+            ? urljoin(this.crowi.appService.getSiteUrl(), '/passport/slack/callback') // auto-generated with v3.2.4 and above
+            : configManager.getConfig('crowi', 'security:passport-slack:callbackUrl'), // DEPRECATED: backward compatible with v3.2.3 and below
+          skipUserProfile: false,
+        },
+        (accessToken, refreshToken, profile, done) => {
+          if (profile) {
+            return done(null, profile);
+          }
+
+          return done(null, false);
+        },
+      ),
+    );
+
+    this.app.use(passport.initialize());
+    this.app.use(require('body-parser').urlencoded({ extended: true }));
+
+    this.isSlackStrategySetup = true;
+    debug('SlackStrategy: setup is done');
   }
 
   /**

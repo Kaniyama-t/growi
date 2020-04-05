@@ -27,6 +27,7 @@ export default class AdminGeneralSecurityContainer extends Container {
       isOidcEnabled: false,
       isBasicEnabled: false,
       isGoogleEnabled: false,
+      isSlackEnabled: false,
       isGitHubEnabled: false,
       isTwitterEnabled: false,
       setupStrategies: [],
@@ -49,6 +50,7 @@ export default class AdminGeneralSecurityContainer extends Container {
       isOidcEnabled: generalAuth.isOidcEnabled,
       isBasicEnabled: generalAuth.isBasicEnabled,
       isGoogleEnabled: generalAuth.isGoogleEnabled,
+      isSlackEnabled: generalAuth.isSlackEnabled,
       isGitHubEnabled: generalAuth.isGitHubEnabled,
       isTwitterEnabled: generalAuth.isTwitterEnabled,
     });
@@ -190,6 +192,13 @@ export default class AdminGeneralSecurityContainer extends Container {
    */
   async switchIsGoogleOAuthEnabled() {
     this.switchAuthentication('isGoogleEnabled', 'google');
+  }
+
+  /**
+   * Switch SlackOAuth enabled
+   */
+  async switchIsSlackOAuthEnabled() {
+    this.switchAuthentication('isSlackEnabled', 'slack');
   }
 
   /**

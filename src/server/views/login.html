@@ -140,6 +140,7 @@
 
         {% if (
           getConfig('crowi', 'security:passport-google:isEnabled') ||
+          getConfig('crowi', 'security:passport-slack:isEnabled') ||
           getConfig('crowi', 'security:passport-github:isEnabled') ||
           getConfig('crowi', 'security:passport-facebook:isEnabled') ||
           getConfig('crowi', 'security:passport-twitter:isEnabled')||
@@ -158,6 +159,15 @@
                 <span class="btn-label-text">{{ t('Sign in') }}</span>
               </button>
               <div class="small text-right">by Google Account</div>
+            </form>
+            {% endif %}
+            {% if getConfig('crowi', 'security:passport-slack:isEnabled') %}
+            <form role="form" action="/passport/slack" class="d-inline-flex flex-column">
+              <button type="submit" class="fcbtn btn btn-1b btn-login-oauth d-flex" id="slack">
+                <!-- <span class="btn-label"><i class="fa fa-google"></i></span> -->
+                <span class="btn-label-text">{{ t('Sign in') }}</span>
+              </button>
+              <div class="small text-right">by Slack Account</div>
             </form>
             {% endif %}
             {% if getConfig('crowi', 'security:passport-github:isEnabled') %}
