@@ -134,6 +134,7 @@
     "passport-ldapauth": "^2.0.0",
     "passport-local": "^1.0.0",
     "passport-saml": "^1.0.0",
+    "passport-slack": "^0.0.7",
     "passport-twitter": "^1.0.4",
     "react-image-crop": "^8.3.0",
     "rimraf": "^3.0.0",
